@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "image-score-studio"
+version = "1.0.0"
+description = "Traceable offline image sonification"
+requires-python = ">=3.12"
+dependencies = ["Pillow==11.3.0"]
+
+[project.scripts]
+image-score = "image_score.cli:main"
+
+[tool.setuptools.package-data]
+image_score = ["report.html"]
+
+[tool.setuptools.packages.find]
+include = ["image_score*"]

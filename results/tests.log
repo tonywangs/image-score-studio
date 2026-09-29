@@ -1,0 +1,209 @@
+test_offline_playback_seek_keyboard_downloads_and_decoding (test_browser.BrowserTests.test_offline_playback_seek_keyboard_downloads_and_decoding) ... ok
+test_240_seeded_oracle_and_independent_midi (test_core.CoreTests.test_240_seeded_oracle_and_independent_midi) ... ok
+test_boundary_grids_and_rejected_formats (test_core.CoreTests.test_boundary_grids_and_rejected_formats) ... ok
+test_cli_invalid_input_exit_and_no_output (test_core.CoreTests.test_cli_invalid_input_exit_and_no_output) ... ok
+test_cli_sigterm_during_write_cleans_staging (test_core.CoreTests.test_cli_sigterm_during_write_cleans_staging) ... ok
+test_concurrent_publication_and_symlink_collisions (test_core.CoreTests.test_concurrent_publication_and_symlink_collisions) ... ok
+test_formats_orientation_palette_and_grayscale (test_core.CoreTests.test_formats_orientation_palette_and_grayscale) ... ok
+test_limits_malformed_and_collision (test_core.CoreTests.test_limits_malformed_and_collision) ... ok
+test_wav_analytical_frequency_peak_and_silence (test_core.CoreTests.test_wav_analytical_frequency_peak_and_silence) ... ok
+test_write_failure_and_cancellation_cleanup (test_core.CoreTests.test_write_failure_and_cancellation_cleanup) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 29.509s
+
+OK
+WARNING: The directory '/var/lib/dailybuilder/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing ./.
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: image-score-studio
+  Building wheel for image-score-studio (pyproject.toml): started
+  Building wheel for image-score-studio (pyproject.toml): finished with status 'done'
+  Created wheel for image-score-studio: filename=image_score_studio-1.0.0-py3-none-any.whl size=9051 sha256=70e21404d4030522c55f9dec27a977667247c7a3a07ca99c9d6b54f1b08894f6
+  Stored in directory: /tmp/pip-ephem-wheel-cache-_bt48f1p/wheels/19/07/24/cb7836bf74ef664a4756e327a63488dffde2940bc8624057de
+Successfully built image-score-studio
+WARNING: The directory '/var/lib/dailybuilder/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/tmpidu10w19/wheels/image_score_studio-1.0.0-py3-none-any.whl
+Installing collected packages: image-score-studio
+Successfully installed image-score-studio-1.0.0
+Created 32 regions in /tmp/tmpidu10w19/bundle/report.html
+Isolated installed entry point: PASS (offline wheel build/install and execution)
+All workload artifact hashes match the recorded reference.
+{
+  "python": "3.12.3",
+  "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+  "workloads": [
+    {
+      "name": "small",
+      "seconds": 0.53363,
+      "peak_rss_kib": 38800,
+      "notes": 32,
+      "audio_seconds": 8.0,
+      "input_sha256": "b18867ab3aa9f45400b3f4be66baffd93830aad219b16ef77f0e1c89f71d85d3",
+      "artifacts": {
+        "checksums.json": {
+          "bytes": 423,
+          "sha256": "c2db471ab043eec3c4625b31d353b493e231e2405145604f06bc7515b6648c2d"
+        },
+        "image.png": {
+          "bytes": 272,
+          "sha256": "b18867ab3aa9f45400b3f4be66baffd93830aad219b16ef77f0e1c89f71d85d3"
+        },
+        "preview.wav": {
+          "bytes": 256044,
+          "sha256": "5a292fe052b7f3d2d5dd05ca3bb02b50204399f417687ad09a3f3075ff4387fb"
+        },
+        "report.html": {
+          "bytes": 364905,
+          "sha256": "087749dd8c226201562602de8046236006957833c95b6b13ba0e59c928594e67"
+        },
+        "score.json": {
+          "bytes": 11341,
+          "sha256": "5a35a0dbad998f57d696333ebef8f9138b43cdfdcf330c5a69eaa81c74e2d82e"
+        },
+        "score.mid": {
+          "bytes": 324,
+          "sha256": "2c47acee4edf107cf8a994de446e16edaa84b43763290b2a423acb44bde4e60f"
+        }
+      }
+    },
+    {
+      "name": "jpeg",
+      "seconds": 0.535873,
+      "peak_rss_kib": 38800,
+      "notes": 21,
+      "audio_seconds": 8.630125,
+      "input_sha256": "589033d2623632b25f23988ff2a489cd0f0fd77065371c913a3af180aa457236",
+      "artifacts": {
+        "checksums.json": {
+          "bytes": 423,
+          "sha256": "ff0c7a58a3e74effb287a2ba81038dd8ce3a5679b5f30fdffdda1bb2e03e936c"
+        },
+        "image.png": {
+          "bytes": 92,
+          "sha256": "c24748c2d493f031e8cdb4f08159c8f4e004922a8f0b75927405d94788c186b3"
+        },
+        "preview.wav": {
+          "bytes": 276208,
+          "sha256": "4b2032a3579245a487e3d748b06ad8ef4d590047e6555193df96d2785839b76c"
+        },
+        "report.html": {
+          "bytes": 386385,
+          "sha256": "bca21273e8ceca3ed3d54335169640be738b0cf582c8911eebcc20bd5c0a5db4"
+        },
+        "score.json": {
+          "bytes": 7566,
+          "sha256": "d1fea4d9b2e5df7403a5d895a5f5e913b8f98084361959e819553099f73adfc2"
+        },
+        "score.mid": {
+          "bytes": 225,
+          "sha256": "8fb1011358f9a28f4b0adb67cf9a0c82f748a49e14a3dcf26eae1b9a19f6761e"
+        }
+      }
+    },
+    {
+      "name": "silence",
+      "seconds": 0.399323,
+      "peak_rss_kib": 38800,
+      "notes": 16,
+      "audio_seconds": 4.0,
+      "input_sha256": "2e0a9a2d5f28563463f634d5b81ec2ef90d91afe472a0c6e2c6ef4082f93ec5f",
+      "artifacts": {
+        "checksums.json": {
+          "bytes": 423,
+          "sha256": "c6b543fb8db5c14e97dfda25148f51341f702899bb6f30a42cc14de9f451f1c1"
+        },
+        "image.png": {
+          "bytes": 73,
+          "sha256": "2e0a9a2d5f28563463f634d5b81ec2ef90d91afe472a0c6e2c6ef4082f93ec5f"
+        },
+        "preview.wav": {
+          "bytes": 128044,
+          "sha256": "f751fd7094be088dc785125e4a1a0222a17c2bd20469aa31728ca5e515ed5809"
+        },
+        "report.html": {
+          "bytes": 186101,
+          "sha256": "ae672c9c5e27fd59cd1ea8e02558b5c637dd122f6239364bcdf0e33d401ed39b"
+        },
+        "score.json": {
+          "bytes": 5721,
+          "sha256": "feb4ae2c9b5df7e67a4d9b1bca4d8e2eb32a0490b3fb31388caeeb513940efc3"
+        },
+        "score.mid": {
+          "bytes": 37,
+          "sha256": "6fdaee5c4208f0fa0ebdc7d3bcb38477325e5dde2892af9538510e6901ca6e1c"
+        }
+      }
+    },
+    {
+      "name": "max-notes",
+      "seconds": 1.715347,
+      "peak_rss_kib": 85128,
+      "notes": 256,
+      "audio_seconds": 32.0,
+      "input_sha256": "bc2a54de06fd8e04fe92f97f5f1d7972d828bf3730c4df420550d1168d1a1986",
+      "artifacts": {
+        "checksums.json": {
+          "bytes": 423,
+          "sha256": "56c874be82afef62eb2926225d0c37bcb513f55d3464cb5285cf59e5dffed449"
+        },
+        "image.png": {
+          "bytes": 16330,
+          "sha256": "bc2a54de06fd8e04fe92f97f5f1d7972d828bf3730c4df420550d1168d1a1986"
+        },
+        "preview.wav": {
+          "bytes": 1024044,
+          "sha256": "d2e5a70def54b8748b7675dd2c5965d2f877906f2ab4ca254fa3f218b3057fdd"
+        },
+        "report.html": {
+          "bytes": 1517909,
+          "sha256": "3ed9d19722bf00ab528fe61cc72c430afb813b2971cfd08810f9ab17b2a6087e"
+        },
+        "score.json": {
+          "bytes": 90019,
+          "sha256": "4e48e31677b9060944ddd596b0a0cd87252ff6c211d8b84e7c4118a3e8e73de4"
+        },
+        "score.mid": {
+          "bytes": 2340,
+          "sha256": "907b3d92ff64fbb9581bb9d82a558d0cb5bffc8987f7128576ff75c9ecb732e0"
+        }
+      }
+    },
+    {
+      "name": "max-duration",
+      "seconds": 2.355761,
+      "peak_rss_kib": 42148,
+      "notes": 60,
+      "audio_seconds": 60.0,
+      "input_sha256": "9047f8e69ba9847796c1736e301272eea897f6415145716ffd585183d33c9673",
+      "artifacts": {
+        "checksums.json": {
+          "bytes": 423,
+          "sha256": "bdacf7aa6a88315892c33dedc06f1a2cea5223ec92ea57ee3ab0aa7942ab9103"
+        },
+        "image.png": {
+          "bytes": 79,
+          "sha256": "6fffa332de911cb71058ec92473ac9e9d75b57c3ec8c6f53cd049e97f5f2d96c"
+        },
+        "preview.wav": {
+          "bytes": 1920044,
+          "sha256": "a8c5b8aa5afd806b7969007cf3393cdfe932853aaaac69aca68baf1b9f347991"
+        },
+        "report.html": {
+          "bytes": 2596237,
+          "sha256": "01698a67423291a69bff36e1b9b0fa08ef6c5e03c3d41b5b06a65761fa761f48"
+        },
+        "score.json": {
+          "bytes": 20781,
+          "sha256": "470a03a6d929dec010074b2d1878e200918176de6ab0de254553e22b62c3a995"
+        },
+        "score.mid": {
+          "bytes": 576,
+          "sha256": "284b783b8b1f3c5fc29252208eebb20fc70bcee822e9ca7df4bcbc0cb0112e21"
+        }
+      }
+    }
+  ]
+}
+All verification stages passed.

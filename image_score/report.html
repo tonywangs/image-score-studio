@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; media-src blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'">
+<title>Image Score Studio</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#111820;color:#edf2f5}*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:32px}header{border-bottom:1px solid #34444e;margin-bottom:28px;padding-bottom:20px}.eyebrow{color:#9ecbb7;letter-spacing:.15em;font-size:12px}h1{font-size:clamp(28px,5vw,48px);margin:10px 0}p{line-height:1.6;color:#bac7ce}main{display:grid;grid-template-columns:1.15fr 1fr;gap:28px}.panel{background:#1a2530;border:1px solid #34444e;border-radius:16px;padding:22px}#frame{position:relative;line-height:0}img{width:100%;height:auto;border-radius:8px}#region{position:absolute;border:3px solid #fff;box-shadow:0 0 0 2px #101010;pointer-events:none}button,a{font:inherit;color:inherit;border:1px solid #61747e;border-radius:7px;background:#253744;padding:10px 14px;cursor:pointer}button:hover,a:hover{background:#3a5363}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffdc8a;outline-offset:3px}#play{background:#b8efd4;color:#15231f;border:0}#seek{width:100%;accent-color:#b8efd4;margin:18px 0}.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#notes{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-height:330px;overflow:auto;margin-top:20px}#notes button{padding:10px 4px;font-size:13px}#notes button[aria-current=true]{border:2px solid #b8efd4;background:#355747}#detail{min-height:90px;line-height:1.7}nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}nav a{font-size:13px;text-decoration:none}.muted{font-size:13px;overflow-wrap:anywhere}#error{color:#ffb7a5}@media(max-width:720px){body{padding:18px}main{grid-template-columns:1fr}}
+</style>
+<header><div class="eyebrow">OFFLINE INSTRUMENT / VERSION 1</div><h1>Every region has a voice.</h1><p id="name"></p></header>
+<main><section class="panel" aria-label="Image and playback"><div id="frame"><img id="image" alt="Source image after orientation and black-background compositing"><div id="region"></div></div><p id="summary"></p><div class="controls"><button id="play">Play</button><button id="restart">Restart</button><output id="time">0.00 s</output></div><label for="seek">Position in seconds</label><input id="seek" type="range" min="0" step="0.001" value="0"><p id="state" role="status">Ready · playback starts only when you press Play.</p><p id="error" role="alert"></p></section>
+<section class="panel" aria-label="Score inspection"><div class="eyebrow">FOLLOW THE SCORE</div><h2>Color → brightness → note</h2><p>Read left to right, top to bottom. Brighter regions play higher and louder; black regions are rests. Every region lasts half a beat.</p><div id="detail" aria-live="polite"></div><p class="muted">Select a note to seek. Use arrow keys, Home or End to inspect neighboring regions.</p><div id="notes" aria-label="Notes"></div></section></main>
+<nav aria-label="Downloads"></nav><p class="muted">A deterministic artistic mapping, not learned image understanding. Sine-wave preview; MIDI instruments may sound different. All media is embedded. No uploads or network access.</p><p class="muted" id="hash"></p>
+<script>
+'use strict';
+const reportSource = '<!doctype html>\n'+document.documentElement.outerHTML;
+const files = __PAYLOAD__;
+const decode = value => Uint8Array.from(atob(value), c => c.charCodeAt(0));
+const score = JSON.parse(new TextDecoder().decode(decode(files['score.json'])));
+const $ = id => document.getElementById(id);
+const mime = {'score.json':'application/json','score.mid':'audio/midi','preview.wav':'audio/wav','image.png':'image/png'};
+const urls = {};
+for (const [name, data] of Object.entries(files)) {
+  urls[name] = URL.createObjectURL(new Blob([decode(data)], {type:mime[name]}));
+  const link = document.createElement('a'); link.href=urls[name];link.download=name;link.textContent='↓ '+name;document.querySelector('nav').append(link);
+}
+const selfLink=document.createElement('a');selfLink.href=URL.createObjectURL(new Blob([reportSource],{type:'text/html'}));selfLink.download='report.html';selfLink.textContent='↓ report.html';document.querySelector('nav').append(selfLink);
+const audio = new Audio(urls['preview.wav']); audio.preload='auto';
+const duration = score.sample_count / score.sample_rate;
+$('image').src='data:image/png;base64,'+files['image.png'];
+$('name').textContent=score.input_name;
+$('summary').textContent=`${score.settings.columns} × ${score.settings.rows} regions · ${score.settings.scale} · ${score.settings.tempo} BPM · ${duration.toFixed(2)} seconds`;
+$('hash').textContent='Original SHA-256: '+score.input_sha256;
+$('seek').max=duration;
+let selected=-1;
+const buttons=score.events.map((event,i)=>{
+ const button=document.createElement('button');button.textContent=`${i+1} · ${event.velocity ? 'MIDI '+event.pitch : 'rest'}`;
+ button.addEventListener('click',()=>seek(event.start_sample/score.sample_rate));
+ button.addEventListener('keydown',e=>{let next=i;if(e.key==='ArrowRight'||e.key==='ArrowDown')next=Math.min(i+1,score.events.length-1);else if(e.key==='ArrowLeft'||e.key==='ArrowUp')next=Math.max(0,i-1);else if(e.key==='Home')next=0;else if(e.key==='End')next=score.events.length-1;else return;e.preventDefault();buttons[next].focus();seek(score.events[next].start_sample/score.sample_rate)});
+ $('notes').append(button);return button;
+});
+function highlight(index){
+ if(selected===index)return;selected=index;
+ buttons.forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));
+ const event=score.events[index], [x0,y0,x1,y1]=event.region;
+ Object.assign($('region').style,{left:100*x0/score.width+'%',top:100*y0/score.height+'%',width:100*(x1-x0)/score.width+'%',height:100*(y1-y0)/score.height+'%'});
+ $('detail').textContent=`Region ${index+1} · pixels [${event.region.join(', ')}). RGB ${event.rgb.join(', ')} → brightness ${event.brightness} → ${event.velocity ? 'MIDI '+event.pitch+', velocity '+event.velocity : 'silent rest'}.`;
+}
+function update(){const time=audio.currentTime;$('seek').value=time;$('time').textContent=time.toFixed(2)+' s';let index=score.events.findIndex(e=>time*score.sample_rate<e.end_sample);highlight(index<0?score.events.length-1:index)}
+function seek(time){audio.currentTime=Math.max(0,Math.min(duration,time));update()}
+$('seek').addEventListener('input',()=>seek(Number($('seek').value)));
+$('restart').addEventListener('click',()=>{audio.pause();seek(0)});
+$('play').addEventListener('click',async()=>{if(!audio.paused){audio.pause();return}if(audio.ended)seek(0);try{await audio.play()}catch(error){$('error').textContent='Playback unavailable: '+error.message}});
+audio.addEventListener('play',()=>{$('play').textContent='Pause';$('state').textContent='Playing'});
+audio.addEventListener('pause',()=>{$('play').textContent='Play';$('state').textContent=audio.ended?'Finished':'Paused';update()});
+audio.addEventListener('ended',()=>{$('state').textContent='Finished';update()});
+audio.addEventListener('error',()=>{$('error').textContent='The browser could not decode the WAV preview.'});
+audio.addEventListener('seeked',update);
+function frame(){if(!audio.paused)update();requestAnimationFrame(frame)}highlight(0);requestAnimationFrame(frame);
+</script></html>
