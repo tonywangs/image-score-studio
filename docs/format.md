@@ -90,3 +90,11 @@ base64 data, so filenames cannot break out into markup or JavaScript. User text
 is inserted with `textContent`. CSP denies connections and permits only embedded
 images, blob audio, and inline script/style. The report does not load external
 scripts, fonts, images, or analytics.
+
+## Saved-score editing compatibility
+
+Conversion continues to emit the version 1 format described here. The offline
+`image-score-edit` command accepts these bundles and emits score version 2, adding
+stable note IDs, explicit mute state, and immediate-parent provenance. See
+[the edit specification and version 2 contract](editing.md). The default conversion
+artifacts and historical reproducibility references remain unchanged.

@@ -88,3 +88,87 @@ physical audio output. Firefox, Safari, macOS, and Windows have not been run.
 Floating-point/codec differences can affect byte identity outside the pinned
 Linux environment. Atomic rename depends on filesystem support; abrupt SIGKILL
 and power loss cannot guarantee cleanup or disk durability.
+
+## Saved-score editing validation (2026-09-30)
+
+The version 1 measurements and results above are historical and retained. The
+editing milestone uses Python 3.12.3, Pillow 11.3.0, Mido 1.3.3, Playwright 1.55.0,
+and Chromium 140.0.7339.16 on Linux x86-64 / glibc 2.39. Run the same single
+verification command: `.venv/bin/python scripts/verify.py`.
+
+The edit oracle runs **240 cases**, seed **20260930**, in addition to the original
+240 mapping cases. It independently constructs expected events, uses rational
+arithmetic for timing, parses MIDI through Mido, and inspects actual PCM frames.
+Cases combine tempo endpoints and fractional sample boundaries, signed transpose,
+velocity assignments, sparse mute/unmute maps, all-muted and all-zero-velocity
+scores. All six exports are compared byte-for-byte across repeated generation.
+Identity exports preserve original MIDI/WAV/PNG bytes. Sequential-edit checks cover
+accumulating transposition, absolute assignments, preserved muted velocity,
+explicit unmuting, stable IDs, parent fingerprints, and source-image deletion.
+Targeted frequency fixtures measure ±12 and +24 semitone changes by zero crossings
+(within 0.5 Hz), and check amplitude bounds and exact muted silence.
+
+Import tests cover malformed schemas, unsupported versions, invalid integers and
+booleans, unknown/duplicate fields and IDs, invalid ticks/sample positions, image
+bounds and colors, missing/extra files, hash mismatches, invalid PNGs, symlinks,
+FIFOs, traversal manifest names, oversized edits, and injected byte/pixel/note/
+duration caps. Output caps are checked before calling the WAV renderer. Error
+coverage includes existing output directories/symlinks, nested outputs, serialization
+failure, simulated disk failure, KeyboardInterrupt, and actual CLI SIGTERM during
+staging. Existing concurrent-publication tests are retained.
+
+Network-blocked Chromium exercises edited playback, pause, seek, highlighting,
+inspection of a muted note's stored velocity, zero-velocity rest labels,
+arrow/Home/End keyboard navigation, ending/replay, all content downloads, reopening
+the downloaded report, and independent browser decoding of the exported WAV.
+Hostile imported filename text stays text; imported executable HTML is discarded.
+The isolated installed check builds/installs without a package index, converts an
+image, deletes that original image, edits its bundle, then imports the version 2
+bundle again to unmute it through the installed `image-score-edit` entry point.
+
+Two initial validation failures were resolved and are recorded here rather than
+hidden: the first baseline run could not launch the absent pinned Chromium binary;
+installing it allowed the unchanged baseline to pass. The first edited browser
+run exposed sample-boundary highlighting at 90 BPM: Chromium's seek clock could
+fall a fraction of a sample below a note start. The edited viewer now compares
+nearest-sample clock positions, and the browser regression passes. The version 1
+viewer remains byte-identical for historical reproducibility.
+
+### Editing workload measurements
+
+These are actual fresh-process editor measurements, including startup, import,
+validation, rendering and publication; creation of the source bundle is excluded.
+Peak RSS is Linux `wait4` per-child maximum in KiB, including launch overhead and
+inherited process memory. It is not an incremental-allocation measure. Workloads
+are bounded reproducible fixtures, not worst-case performance/security bounds.
+`max-notes-pixels` uses the existing compressible 2000×2000 gradient. The all-muted
+case still exports a full-length silent WAV.
+
+| Workload | Notes | Audio seconds | Runtime seconds | Peak RSS KiB | Bundle bytes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| identity | 32 | 8 | 0.488 | 42,204 | 637,371 |
+| combined | 21 | 8.630125 | 0.443 | 42,204 | 674,040 |
+| all-muted | 32 | 8 | 0.207 | 42,204 | 638,286 |
+| max-notes-pixels | 256 | 32 | 1.440 | 89,236 | 2,677,085 |
+| max-duration | 60 | 60 | 1.929 | 89,236 | 4,544,993 |
+
+Exact times, environment, per-file sizes/hashes, edit-input hashes and parent
+fingerprints are in [`results/edit-benchmark.json`](../results/edit-benchmark.json).
+The verifier regenerates both original and edited workload sets and compares
+artifact sizes/hashes; it does not demand identical runtime or RSS measurements.
+
+```sh
+.venv/bin/python scripts/edit_benchmark.py --check results/edit-benchmark.json
+```
+
+To explicitly replace the measured editor reference with a new local measurement:
+
+```sh
+.venv/bin/python scripts/edit_benchmark.py --output results/edit-benchmark.json
+```
+
+The earlier limitations continue to apply. No human listening, screen-reader,
+physical latency, musical-quality, Safari/Firefox or other OS evaluations were
+performed for the editor. Imported hashes provide consistency, not authenticity;
+imported media are discarded after hashing, not fully parsed for validity.
+See [the editing contract](editing.md) for trust boundaries and pitch restrictions.

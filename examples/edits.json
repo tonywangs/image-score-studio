@@ -1,0 +1,8 @@
+{
+  "format": "image-score-edit",
+  "version": 1,
+  "tempo": 90,
+  "transpose": 7,
+  "velocity": {"n001": 40},
+  "mute": {"n000": true}
+}

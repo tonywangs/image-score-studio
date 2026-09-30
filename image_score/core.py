@@ -105,7 +105,7 @@ def midi_bytes(score):
     track = bytearray(b"\x00\xff\x51\x03" + score["tempo_us"].to_bytes(3, "big") + b"\x00\xc0\x00")
     pending = 0
     for event in score["events"]:
-        if event["velocity"]:
+        if event["velocity"] and not event.get("muted", False):
             track += vlq(pending) + bytes([0x90, event["pitch"], event["velocity"]])
             track += vlq(240) + bytes([0x80, event["pitch"], 0])
             pending = 0
@@ -118,6 +118,8 @@ def midi_bytes(score):
 def wav_bytes(score):
     pcm = bytearray(score["sample_count"] * 2)
     for event in score["events"]:
+        if event.get("muted", False) or not event["velocity"]:
+            continue
         start, end = event["start_sample"], event["end_sample"]
         hz = 440 * 2 ** ((event["pitch"] - 69) / 12)
         gain = 0.7 * event["velocity"] / 127
@@ -135,9 +137,19 @@ def wav_bytes(score):
 def artifacts(score, image):
     png = io.BytesIO()
     image.save(png, format="PNG")
-    files = {"score.json": canonical(score), "score.mid": midi_bytes(score), "preview.wav": wav_bytes(score), "image.png": png.getvalue()}
+    # Calculate exact encoded sizes before allocating/synthesizing the WAV or HTML.
+    files = {"score.json": canonical(score), "score.mid": midi_bytes(score), "preview.wav": b"", "image.png": png.getvalue()}
+    template_name = "edited-report.html" if score["version"] == 2 else "report.html"
+    template = Path(__file__).with_name(template_name).read_text()
+    sizes = {name: len(data) for name, data in files.items()}
+    sizes["preview.wav"] = 44 + score["sample_count"] * 2
+    payload_size = len(json.dumps({name: "" for name in files})) + sum(4 * ((size + 2) // 3) for size in sizes.values())
+    sizes["report.html"] = len(template.encode()) - len("__PAYLOAD__") + payload_size
+    sizes["checksums.json"] = len(canonical({name: "0" * 64 for name in sizes}))
+    if max(sizes.values()) > MAX_FILE or sum(sizes.values()) > MAX_BUNDLE:
+        raise ValueError("output size limit exceeded before audio rendering")
+    files["preview.wav"] = wav_bytes(score)
     payload = {name: base64.b64encode(data).decode() for name, data in files.items()}
-    template = Path(__file__).with_name("report.html").read_text()
     files["report.html"] = template.replace("__PAYLOAD__", json.dumps(payload)).encode()
     files["checksums.json"] = canonical({name: hashlib.sha256(data).hexdigest() for name, data in files.items()})
     if any(len(data) > MAX_FILE for data in files.values()) or sum(map(len, files.values())) > MAX_BUNDLE:

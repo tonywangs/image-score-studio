@@ -44,11 +44,50 @@ The bundle contains:
 | `report.html` | Self-contained viewer with image, JSON, MIDI, and WAV embedded |
 | `checksums.json` | SHA-256 of the other five generated files |
 
-JSON can be edited for inspection and MIDI can be edited in a sequencer. The CLI
-currently converts images only; it does not re-render edited JSON or MIDI.
 Browser downloads include the five content artifacts; the external checksum
 manifest is available in the CLI bundle. A browser-saved HTML is serialized by the
 browser and need not have the original HTML's byte hash.
+
+## Edit a saved score offline
+
+Keep the complete six-file bundle. The original image file is no longer needed.
+Create a JSON edit specification, or use [`examples/edits.json`](examples/edits.json):
+
+```json
+{
+  "format": "image-score-edit",
+  "version": 1,
+  "tempo": 90,
+  "transpose": 7,
+  "velocity": {"n001": 40},
+  "mute": {"n000": true}
+}
+```
+
+```sh
+.venv/bin/image-score-edit /tmp/my-image-score examples/edits.json /tmp/my-edited-score
+```
+
+Open `/tmp/my-edited-score/report.html` to play, seek, inspect the edited notes,
+and download synchronized JSON, MIDI and WAV. The CLI emits a fresh complete bundle,
+including checksums. It validates the saved score, image regions and asset hashes
+before export. Imported HTML is discarded and rebuilt from the installed template.
+No source image lookup, inference service, or network connection is needed.
+
+IDs start at `n000` in row-major order and remain stable across edits. Version 1
+conversion bundles receive IDs on import; edited scores use score format version 2.
+Tempo is an absolute integer BPM (30–240), transpose is a relative integer semitone
+offset, velocity is absolute (0–127), and mute is an absolute boolean. Muting keeps
+the stored velocity and the note's duration; use `false` in a later edit to unmute.
+Omitted values remain unchanged. An empty edit uses just `format` and `version`.
+All pitches must remain 0–119 for the 16 kHz preview; invalid values fail, never clip.
+
+Reapply `image-score-edit` to the edited bundle for another generation. Transposition
+accumulates, while tempo, velocity and mute assignments replace previous values.
+Every generation records its immediate parent bundle fingerprint and normalized
+edits. Keep parent bundles to retain the full history. See [edit format and import
+limits](docs/editing.md) for exact semantics, compatibility, and trust boundaries.
+This workflow does not import MIDI changes made in other editors.
 
 ## Verify everything
 
