@@ -42,3 +42,19 @@ The existing version 1 score, MIDI/WAV exporters, browser template, import-relat
 limits, and tests were reviewed before designing version 2. The stored format
 keeps the original mapping evidence and adds stable IDs, explicit mute state,
 and immediate-parent provenance rather than inferring edits from MIDI files.
+
+## Browser editor references (reviewed 2026-10-01)
+
+- [BeepBox, original application and offline distribution](https://www.beepbox.co/):
+  an established browser music editor with playback, note editing, undo/redo and
+  offline use. Browser score editing and self-contained music tools are not novel.
+  This milestone is scoped to saved image-region scores and CLI-compatible edits.
+- [W3C Web Audio API](https://www.w3.org/TR/webaudio/): primary reference for audio
+  buffers, source lifecycle and the audio context clock. The editor uses one
+  bounded buffer source and explicitly identifies its synthesis as distinct from
+  the existing Python WAV renderer. The linked 1.1 document is a working draft;
+  implementation uses long-established AudioContext/AudioBufferSourceNode APIs.
+
+The existing strict bundle importer, Python transformations and MIDI/WAV exporters
+remain authoritative. Browser transformation tests also use exact rational timing
+calculations independently of those implementations.

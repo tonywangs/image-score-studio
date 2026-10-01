@@ -1,0 +1,50 @@
+{
+  "python": "3.12.3",
+  "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+  "dependencies": {
+    "Pillow": "11.3.0",
+    "playwright": "1.55.0"
+  },
+  "measurement": "One local sample per workload; wall times are descriptive, not performance thresholds. Browser load includes navigation and image decode wait; synthesis includes browser roundtrip.",
+  "workloads": [
+    {
+      "name": "small",
+      "pixels": 4096,
+      "notes": 32,
+      "audio_seconds": 8.0,
+      "generation_seconds": 0.088645,
+      "browser_load_seconds": 0.908179,
+      "synthesis_roundtrip_seconds": 0.172765,
+      "mounted_elements": 95,
+      "html_bytes": 36280,
+      "html_sha256": "93e6de0de0506698460af7d4b7aaacf35def215e50b87af436d8bba5c4154c3f",
+      "audio_buffer_bytes": 512000
+    },
+    {
+      "name": "max-notes-pixels",
+      "pixels": 4000000,
+      "notes": 256,
+      "audio_seconds": 32.0,
+      "generation_seconds": 1.901079,
+      "browser_load_seconds": 1.993557,
+      "synthesis_roundtrip_seconds": 0.375182,
+      "mounted_elements": 319,
+      "html_bytes": 445636,
+      "html_sha256": "d0bef76de8990f2e025d6d6e4f383fc0437bafdf4d455f28b9584dad7ec24462",
+      "audio_buffer_bytes": 2048000
+    },
+    {
+      "name": "max-duration",
+      "pixels": 16384,
+      "notes": 60,
+      "audio_seconds": 60.0,
+      "generation_seconds": 0.114162,
+      "browser_load_seconds": 0.700595,
+      "synthesis_roundtrip_seconds": 0.204266,
+      "mounted_elements": 123,
+      "html_bytes": 52724,
+      "html_sha256": "2549fe75afbc59e60a9f6096dc53b7e0ef7feebffe64e12b3cb22bc97fb230eb",
+      "audio_buffer_bytes": 3840000
+    }
+  ]
+}

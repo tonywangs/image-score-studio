@@ -89,6 +89,20 @@ edits. Keep parent bundles to retain the full history. See [edit format and impo
 limits](docs/editing.md) for exact semantics, compatibility, and trust boundaries.
 This workflow does not import MIDI changes made in other editors.
 
+## Edit interactively in your browser
+
+Generate a self-contained editor from a complete saved bundle:
+
+```sh
+.venv/bin/image-score-editor /tmp/my-image-score /tmp/my-score-editor
+```
+
+Open `/tmp/my-score-editor/editor.html`. Change tempo, transpose, velocity or mute;
+preview, undo/redo, and download `edits.json` for `image-score-edit`. Download a
+source-bound session to restore progress later. The original image is unnecessary.
+Browser synthesis previews the score; the CLI produces the reproducible MIDI/WAV.
+See [browser workflow, session semantics and limits](docs/browser-editor.md).
+
 ## Verify everything
 
 Provision the test dependencies and Chromium once:

@@ -172,3 +172,59 @@ physical latency, musical-quality, Safari/Firefox or other OS evaluations were
 performed for the editor. Imported hashes provide consistency, not authenticity;
 imported media are discarded after hashing, not fully parsed for validity.
 See [the editing contract](editing.md) for trust boundaries and pitch restrictions.
+
+## Browser editor validation (2026-10-01)
+
+The catalog baseline tree and all 27 file hashes matched before implementation.
+Historical conversion and editing evidence above, both report templates, examples,
+and reference artifact hashes are retained. Browser editor generation is a separate
+entry point and uses the existing strict saved-bundle importer.
+
+The new checks compare **240 seeded browser transformations**, seed **73191**,
+with Python and independent exact-rational timing calculations. Both source score
+versions are exercised, including already-transposed and muted sources. Comparisons
+cover whole score objects, IDs, ticks, sample boundaries, pitches, velocities, mute
+flags, provenance, and canonical export bytes. These supplement the original 480
+seeded conversion/edit cases.
+
+Network-blocked Chromium exercises editing, undo/redo/reset, stable note selection,
+visible keyboard focus, announced errors, strict invalid imports, hostile metadata,
+actual edit/session downloads, deterministic bytes, CLI regeneration, rendered
+report decoding, session restore after reload, source mismatch and bounded history.
+It also checks preview play/pause/seek/end/replay, muted-buffer silence, nonzero sound,
+stop on editing, unavailable audio, and cancellation of a pending audio start.
+The isolated installed wheel generates an editor, exports edits in Chromium and
+regenerates the identical score through its installed CLI outside the checkout.
+A desktop editor screenshot was inspected; no additional mobile or human
+accessibility/listening evaluation is claimed.
+
+Initial failures were environmental or in the test harness: pinned Chromium was
+missing, Playwright string polling conflicted with the restrictive CSP, and an
+injected output cap initially triggered an input cap first. Chromium was provisioned,
+polling uses direct evaluation without weakening the page CSP, and the cap test
+isolates generation from import. All three new editor tests passed after correction,
+including the additional audio-race checks. The complete verifier also retains all
+20 previous tests and both historical benchmark comparisons.
+
+Actual measurements for the final editor are in
+[`results/editor-benchmark.json`](../results/editor-benchmark.json). These are single
+wall-clock samples collected on a shared Linux host, with concurrent validation
+work; they are not worst-case bounds or statistically stable latency estimates.
+The source image is a deterministic spatial RGB pattern, not private data.
+
+| Workload | Notes | HTML bytes | Generation s | Browser load s | Mounted elements |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| small | 32 | 36,280 | 0.089 | 0.908 | 95 |
+| max-notes-pixels | 256 | 445,636 | 1.901 | 1.994 | 319 |
+| max-duration | 60 | 52,724 | 0.114 | 0.701 | 123 |
+
+The last workload renders 60 seconds in a 3,840,000-byte mono Float32 audio buffer.
+The measurement script checks sample count, note count, element bounds, browser
+errors and lack of external requests. Reverification compares deterministic sizes,
+hashes and counts; it records fresh timings without requiring them to be identical.
+
+Browser synthesis is not sample-equivalent to the Python WAV renderer. Validation
+establishes matching score events and timing, plus signal/silence in the preview,
+not subjective sound quality, speaker output or device latency. Screen-reader,
+Safari/Firefox, mobile and non-Linux behavior remain unvalidated for this editor.
+See [the browser editor contract](browser-editor.md) for limits and session semantics.

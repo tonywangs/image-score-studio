@@ -48,7 +48,28 @@ def main():
                         str(tmp/'edited'), str(tmp/'edits.json'), str(tmp/'unmuted')],
                        cwd=tmp, env=env, check=True)
         assert not json.loads((tmp/'unmuted'/'score.json').read_text())['events'][0]['muted']
-    print('Isolated installed entry points: PASS (offline conversion, source deletion, editing, re-editing)')
+        subprocess.run([sys.executable, '-S', str(target/'bin'/'image-score-editor'),
+                        str(tmp/'edited'), str(tmp/'editor')],cwd=tmp,env=env,check=True)
+        html=(tmp/'editor'/'editor.html').read_text()
+        assert '__SCRIPT__' not in html and '__PAYLOAD__' not in html
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            browser=pw.chromium.launch(args=['--no-sandbox'])
+            page=browser.new_page(offline=True)
+            page.goto((tmp/'editor'/'editor.html').as_uri())
+            assert page.locator('#notes button').count()==32
+            page.locator('#transpose').fill('-2')
+            page.locator('#transpose').press('Enter')
+            with page.expect_download() as download:
+                page.locator('#export').click()
+            download.value.save_as(tmp/'browser-edits.json')
+            expected=page.evaluate('score')
+            browser.close()
+        subprocess.run([sys.executable, '-S', str(target/'bin'/'image-score-edit'),
+                        str(tmp/'edited'), str(tmp/'browser-edits.json'), str(tmp/'browser-rendered')],
+                       cwd=tmp,env=env,check=True)
+        assert json.loads((tmp/'browser-rendered'/'score.json').read_text())==expected
+    print('Isolated installed entry points: PASS (offline conversion, source deletion, editing, re-editing, browser editor export and CLI render)')
 
 
 if __name__=='__main__':main()
